@@ -1,37 +1,54 @@
+import {useContext} from 'react'
+import {Link, withRouter} from 'react-router-dom'
+import {AiOutlineShoppingCart} from 'react-icons/ai'
+// eslint-disable-next-line import/no-unresolved
+import Cookies from 'js-cookie'
+
+import CartContext from '../../context/CartContext'
+
 import './index.css'
 
-const Header = ({cartItems}) => {
-  const getCartItemsCount = () =>
-    cartItems.reduce((acc, item) => acc + item.quantity, 0)
+const Header = props => {
+  const {cartList, restaurantName} = useContext(CartContext)
+
+  const onLogout = () => {
+    const {history} = props
+    Cookies.remove('jwt_token')
+    history.replace('/login')
+  }
 
   const renderCartIcon = () => (
     <div className="cart-icon-container">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="35"
-        height="35"
-        fill="#000000"
-        className="bi bi-cart3 cart-icon"
-        viewBox="0 0 516 516"
-      >
-        <path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z" />
-      </svg>
+      <Link to="/cart">
+        <button type="button" className="cart-icon-button">
+          <AiOutlineShoppingCart className="cart-icon" />
+        </button>
+      </Link>
       <div className="cart-count-badge d-flex justify-content-center align-items-center">
-        <p className="m-0 cart-count">{getCartItemsCount()}</p>
+        <p className="m-0 cart-count">{cartList.length}</p>
       </div>
     </div>
   )
 
   return (
     <nav className="nav-container">
-      <h1 className="m-0 logo-heading">UNI Resto Cafe</h1>
+      <Link to="/">
+        <h1 className="m-0 logo-heading">{restaurantName}</h1>
+      </Link>
       <div className="cart-container">
         <p className="mt-0 mb-0 me-2 d-none d-sm-block my-orders-text">
           My Orders
         </p>
+        <button
+          type="button"
+          className="btn btn-outline-danger ms-2 me-2"
+          onClick={onLogout}
+        >
+          Logout
+        </button>
         {renderCartIcon()}
       </div>
     </nav>
   )
 }
-export default Header
+export default withRouter(Header)
